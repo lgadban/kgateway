@@ -493,7 +493,7 @@ envoy-wrapper-distroless-docker: $(ENVOYINIT_OUTPUT_DIR)/envoyinit-linux-$(GOARC
 #----------------------------------------------------------------------------------
 
 GORELEASER ?= go run github.com/goreleaser/goreleaser/v2@v2.5.1
-GORELEASER_ARGS ?= --snapshot --clean
+GORELEASER_ARGS ?= --snapshot --clean --verbose
 GORELEASER_CURRENT_TAG ?= $(VERSION)
 .PHONY: release
 release:  ## Create a release using goreleaser
