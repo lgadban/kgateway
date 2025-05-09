@@ -54,7 +54,7 @@ jobs:
             else
               VERSION="v0.0.0-manual-${GIT_SHA}"
             fi
-            echo "goreleaser_args=--clean" >> $GITHUB_OUTPUT
+            echo "goreleaser_args=--clean --skip=validate" >> $GITHUB_OUTPUT
           elif [[ $GITHUB_REF == refs/heads/main ]]; then
             VERSION="v2.0.0-main"
             echo "goreleaser_args=--clean --skip=validate" >> $GITHUB_OUTPUT
