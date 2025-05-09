@@ -54,11 +54,7 @@ jobs:
             else
               VERSION="v0.0.0-manual-${GIT_SHA}"
             fi
-            echo "creating tag ${VERSION} at commit ${GIT_SHA}"
-            git tag $VERSION
-            git rev-parse $VERSION
-            echo "commit_sha=${GIT_SHA}" >> $GITHUB_OUTPUT
-            echo "goreleaser_args=--clean --skip=validate" >> $GITHUB_OUTPUT
+            echo "goreleaser_args=--clean" >> $GITHUB_OUTPUT
           elif [[ $GITHUB_REF == refs/heads/main ]]; then
             VERSION="v2.0.0-main"
             echo "goreleaser_args=--clean --skip=validate" >> $GITHUB_OUTPUT
