@@ -54,10 +54,11 @@ jobs:
             else
               VERSION="v0.0.0-manual-${GIT_SHA}"
             fi
+            echo "creating tag ${VERSION} at commit ${GIT_SHA}"
+            git tag $VERSION
+            git rev-parse $VERSION
+            echo "commit_sha=${GIT_SHA}" >> $GITHUB_OUTPUT
             echo "goreleaser_args=--clean --skip=validate" >> $GITHUB_OUTPUT
-          elif [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/}"
-            echo "goreleaser_args=--clean" >> $GITHUB_OUTPUT
           elif [[ $GITHUB_REF == refs/heads/main ]]; then
             VERSION="v2.0.0-main"
             echo "goreleaser_args=--clean --skip=validate" >> $GITHUB_OUTPUT
@@ -140,6 +141,7 @@ jobs:
           IMAGE_REGISTRY: ${{ env.IMAGE_REGISTRY }}
           GORELEASER_ARGS: ${{ needs.setup.outputs.goreleaser_args }}
           GORELEASER_CURRENT_TAG: ${{ needs.setup.outputs.version }}
+          COMMIT_SHA: ${{ needs.setup.outputs.commit_sha }}
 
   validate:
     name: Validate release artifacts
