@@ -132,6 +132,26 @@ dockers:
     extra_files:
       - cmd/envoyinit/docker-entrypoint.sh
       - internal/envoyinit
+  - image_templates:
+      - &agentgateway_arm_image "{{ .Env.IMAGE_REGISTRY }}/{{ .Env.AGENTGATEWAY_IMAGE_REPO }}:{{ .Env.VERSION }}-arm64"
+    use: buildx
+    dockerfile: &agentgateway_dockerfile cmd/kgateway/Dockerfile.agentgateway
+    goos: linux
+    goarch: arm64
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+      - "--build-arg=GOARCH=arm64"
+  - image_templates:
+      - &agentgateway_amd_image "{{ .Env.IMAGE_REGISTRY }}/{{ .Env.AGENTGATEWAY_IMAGE_REPO }}:{{ .Env.VERSION }}-amd64"
+    use: buildx
+    dockerfile: *agentgateway_dockerfile
+    goos: linux
+    goarch: amd64
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/amd64"
+      - "--build-arg=GOARCH=amd64"
 docker_manifests:
   - name_template: "{{ .Env.IMAGE_REGISTRY }}/{{ .Env.CONTROLLER_IMAGE_REPO }}:{{ .Env.VERSION }}"
     image_templates:
@@ -145,6 +165,10 @@ docker_manifests:
     image_templates:
       - *envoyinit_arm_image
       - *envoyinit_amd_image
+  - name_template: "{{ .Env.IMAGE_REGISTRY }}/{{ .Env.AGENTGATEWAY_IMAGE_REPO }}:{{ .Env.VERSION }}"
+    image_templates:
+      - *agentgateway_arm_image
+      - *agentgateway_amd_image
 changelog:
   # Disable auto-generated changelog from git commits.
   # For real releases, we use --release-notes flag with our custom script output.
@@ -183,6 +207,7 @@ release:
     - {{ .Env.VANITY_REGISTRY }}/{{ .Env.CONTROLLER_IMAGE_REPO }}:{{ .Env.VERSION }}
     - {{ .Env.VANITY_REGISTRY }}/{{ .Env.SDS_IMAGE_REPO }}:{{ .Env.VERSION }}
     - {{ .Env.VANITY_REGISTRY }}/{{ .Env.ENVOYINIT_IMAGE_REPO }}:{{ .Env.VERSION }}
+    - {{ .Env.VANITY_REGISTRY }}/{{ .Env.AGENTGATEWAY_IMAGE_REPO }}:{{ .Env.VERSION }}
 
     ## Quickstart
 
