@@ -1,7 +1,8 @@
 package version
 
 import (
-	"fmt"
+	"encoding/json"
+	"runtime"
 	"runtime/debug"
 )
 
@@ -18,13 +19,16 @@ var (
 )
 
 type version struct {
-	controller string
-	commit     string
-	date       string
+	Controller string `json:"version"`
+	Commit     string `json:"commit"`
+	Date       string `json:"buildDate"`
+	OS         string `json:"runtimeOS"`
+	Arch       string `json:"runtimeArch"`
 }
 
 func String() string {
-	return fmt.Sprintf("controller version %s, commit %s, built at %s", ref.controller, ref.commit, ref.date)
+	data, _ := json.Marshal(ref)
+	return string(data)
 }
 
 func init() {
@@ -39,14 +43,16 @@ func init() {
 		v = UndefinedVersion
 	}
 	ref = &version{
-		controller: v,
+		Controller: v,
+		OS:         runtime.GOOS,
+		Arch:       runtime.GOARCH,
 	}
 	for _, setting := range info.Settings {
 		switch setting.Key {
 		case "vcs.revision":
-			ref.commit = setting.Value
+			ref.Commit = setting.Value
 		case "vcs.time":
-			ref.date = setting.Value
+			ref.Date = setting.Value
 		}
 	}
 }
