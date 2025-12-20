@@ -3,7 +3,6 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -x
 
 # Track execution time
 SECONDS=0
@@ -36,7 +35,7 @@ function show_help() {
 
 function cleanup() {
     if [ -n "$TEMP_DIR" ] && [ -d "$TEMP_DIR" ]; then
-        rm -rf "$TEMP_DIR"
+        rm -rf "$TEMP_DIR" || echo "Warning: Failed to cleanup temporary directory $TEMP_DIR"
     fi
 }
 
@@ -131,7 +130,18 @@ function process_prs() {
     local pr_numbers_file="$5"
 
     # Get PR numbers from commit messages
-    git log "$start_ref..$end_ref" --pretty=format:"%s%n%b" | \
+    # First, get the git log output
+    local git_log_output
+    git_log_output=$(git log "$start_ref..$end_ref" --pretty=format:"%s%n%b")
+
+    # Check if git log has any output
+    if [ -z "$git_log_output" ]; then
+        echo "No commits found between $start_ref and $end_ref"
+        return
+    fi
+
+    # Extract PR numbers from the git log output
+    echo "$git_log_output" | \
         grep -o -E "(#|\\()[0-9]+\\)?" | \
         tr -d '#()' | \
         sort -un > "$pr_numbers_file"
@@ -285,7 +295,7 @@ done
 
 if [[ $FOUND_NOTES -eq 0 ]]; then
     echo "No release notes found in any PRs"
-    exit 1
+    exit 0
 fi
 
 # Ensure output directory exists
