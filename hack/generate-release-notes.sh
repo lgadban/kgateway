@@ -293,13 +293,14 @@ for KIND in breaking_change feature fix deprecation documentation cleanup instal
     fi
 done
 
-if [[ $FOUND_NOTES -eq 0 ]]; then
-    echo "No release notes found in any PRs"
-    exit 0
-fi
-
 # Ensure output directory exists
 mkdir -p "$(dirname "$OUTPUT_FILE")"
+
+if [[ $FOUND_NOTES -eq 0 ]]; then
+    echo "No release notes found in any PRs"
+    echo "No release notes found" > "$OUTPUT_FILE"
+    exit 0
+fi
 
 # Initialize the output file
 cat > "$OUTPUT_FILE" << EOF
@@ -307,6 +308,7 @@ cat > "$OUTPUT_FILE" << EOF
 
 ### Changes since $PREVIOUS_TAG
 EOF
+
 
 # Generate the final release notes
 for KIND in breaking_change feature fix deprecation documentation cleanup install bump; do
