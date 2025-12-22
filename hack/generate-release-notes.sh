@@ -313,7 +313,6 @@ cat > "$OUTPUT_FILE" << EOF
 ### Changes since $PREVIOUS_TAG
 EOF
 
-
 # Generate the final release notes
 for KIND in breaking_change feature fix deprecation documentation cleanup install bump; do
     if [[ -f "$TEMP_DIR/$KIND.txt" ]]; then
