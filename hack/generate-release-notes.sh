@@ -298,7 +298,11 @@ mkdir -p "$(dirname "$OUTPUT_FILE")"
 
 if [[ $FOUND_NOTES -eq 0 ]]; then
     echo "No release notes found in any PRs"
-    echo "No release notes found" > "$OUTPUT_FILE"
+    cat > "$OUTPUT_FILE" << EOF
+    ## Release Notes
+
+    No release notes generated
+EOF
     exit 0
 fi
 
