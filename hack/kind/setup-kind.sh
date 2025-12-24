@@ -28,6 +28,8 @@ HELM="${HELM:-go tool helm}"
 LOCALSTACK="${LOCALSTACK:-false}"
 # Registry cache reference for envoyinit Docker build (optional)
 ENVOYINIT_CACHE_REF="${ENVOYINIT_CACHE_REF:-}"
+# If true, build and load agentgateway images instead of envoy
+AGENTGATEWAY="${AGENTGATEWAY:-false}"
 
 # Export the variables so they are available in the environment
 export VERSION CLUSTER_NAME ENVOYINIT_CACHE_REF
