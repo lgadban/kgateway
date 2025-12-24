@@ -33,7 +33,7 @@ ENVOYINIT_CACHE_REF="${ENVOYINIT_CACHE_REF:-}"
 export VERSION CLUSTER_NAME ENVOYINIT_CACHE_REF
 
 function create_kind_cluster_or_skip() {
-  activeClusters=$(kind get clusters)
+  activeClusters=$($KIND get clusters)
 
   # if the kind cluster exists already, return
   if [[ "$activeClusters" =~ .*"$CLUSTER_NAME".* ]]; then
@@ -64,13 +64,13 @@ function create_and_setup() {
   # 6. Apply the Kubernetes Gateway API Inference Extension CRDs
   make gie-crds
 
+  # TODO: extract metallb install to a diff function so we can let it run in the background
   . $SCRIPT_DIR/setup-metalllb-on-kind.sh
 }
 
 # 1. Create a kind cluster (or skip creation if a cluster with name=CLUSTER_NAME already exists)
 # This config is roughly based on: https://kind.sigs.k8s.io/docs/user/ingress/
-create_and_setup &
-KIND_PID=$!
+create_and_setup
 
 if [[ $SKIP_DOCKER == 'true' ]]; then
   # TODO(tim): refactor the Makefile & CI scripts so we're loading local
@@ -87,8 +87,6 @@ else
 
   VERSION=$VERSION make package-kgateway-charts package-agentgateway-charts
 fi
-
-wait "$KIND_PID"
 
 # 7. Setup localstack
 if [[ $LOCALSTACK == "true" ]]; then

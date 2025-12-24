@@ -47,6 +47,7 @@ func (p *Provider) EventuallyPodsRunning(
 	listOpt metav1.ListOptions,
 	timeout ...time.Duration,
 ) {
+	p.t.Helper()
 	p.EventuallyPodsMatches(ctx, podNamespace, listOpt, matchers.PodMatches(matchers.ExpectedPod{Status: corev1.PodRunning, Ready: true}), timeout...)
 }
 
@@ -58,6 +59,7 @@ func (p *Provider) EventuallyPodsMatches(
 	matcher types.GomegaMatcher,
 	timeout ...time.Duration,
 ) {
+	p.t.Helper()
 	currentTimeout, pollingInterval := helpers.GetTimeouts(timeout...)
 
 	p.Gomega.Eventually(func(g gomega.Gomega) {
