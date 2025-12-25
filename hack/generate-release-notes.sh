@@ -2,7 +2,6 @@
 
 set -o errexit
 set -o nounset
-set -x
 
 # Track execution time
 SECONDS=0
