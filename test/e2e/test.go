@@ -152,6 +152,8 @@ func (i *TestInstallation) CreateIstioBugReport(ctx context.Context) {
 	cluster.CreateIstioBugReport(ctx, i.IstioctlBinary, i.ClusterContext.KubeContext, i.GeneratedFiles.FailureDir)
 }
 
+// InstallKgatewayFromLocalChart installs the controller and CRD chart based on the `ChartType` of the underlying
+// TestInstallation. By default `kgateway` will be installed but can be set to `agentgateway`
 func (i *TestInstallation) InstallKgatewayFromLocalChart(ctx context.Context) {
 	chartType := i.Metadata.GetChartType()
 	if chartType == "agentgateway" {

@@ -24,6 +24,7 @@ func (p *Provider) EventuallyPodReady(
 	podName string,
 	timeout ...time.Duration,
 ) {
+	p.t.Helper()
 	currentTimeout, pollingInterval := helpers.GetTimeouts(timeout...)
 
 	p.Gomega.Eventually(func(g gomega.Gomega) {
@@ -82,6 +83,7 @@ func (p *Provider) EventuallyPodsNotExist(
 	listOpt metav1.ListOptions,
 	timeout ...time.Duration,
 ) {
+	p.t.Helper()
 	currentTimeout, pollingInterval := helpers.GetTimeouts(timeout...)
 
 	p.Gomega.Eventually(func(g gomega.Gomega) {
@@ -105,6 +107,7 @@ func (p *Provider) EventuallyPodContainerContainsEnvVar(
 	envVar corev1.EnvVar,
 	timeout ...time.Duration,
 ) {
+	p.t.Helper()
 	currentTimeout, pollingInterval := helpers.GetTimeouts(timeout...)
 
 	p.Gomega.Eventually(func(g gomega.Gomega) {
@@ -137,6 +140,7 @@ func (p *Provider) EventuallyPodContainerDoesNotContainEnvVar(
 	envVarName string,
 	timeout ...time.Duration,
 ) {
+	p.t.Helper()
 	currentTimeout, pollingInterval := helpers.GetTimeouts(timeout...)
 
 	p.Gomega.Eventually(func(g gomega.Gomega) {
