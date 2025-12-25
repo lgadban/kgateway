@@ -37,12 +37,12 @@ var (
 	}
 )
 
-type testingSuite struct {
+type testingSuiteKgateway struct {
 	*base.BaseTestingSuite
 }
 
-func NewTestingSuite(ctx context.Context, testInst *e2e.TestInstallation) suite.TestingSuite {
-	return &testingSuite{
+func NewTestingSuiteKgateway(ctx context.Context, testInst *e2e.TestInstallation) suite.TestingSuite {
+	return &testingSuiteKgateway{
 		base.NewBaseTestingSuite(
 			ctx,
 			testInst,
@@ -53,15 +53,12 @@ func NewTestingSuite(ctx context.Context, testInst *e2e.TestInstallation) suite.
 				"TestZeroDowntimeRollout": {
 					Manifests: []string{gatewayManifest, defaults.CurlPodManifest},
 				},
-				"TestZeroDowntimeRolloutAgentgateway": {
-					Manifests: []string{agentgatewayManifest, defaults.CurlPodManifest},
-				},
 			},
 		),
 	}
 }
 
-func (s *testingSuite) TestZeroDowntimeRollout() {
+func (s *testingSuiteKgateway) TestZeroDowntimeRollout() {
 	// Ensure the gateway pod is up and running.
 	s.TestInstallation.Assertions.EventuallyPodsRunning(s.Ctx,
 		proxyObjectMeta.GetNamespace(), metav1.ListOptions{
@@ -114,7 +111,28 @@ func (s *testingSuite) TestZeroDowntimeRollout() {
 	s.NotContains(string(cmd.Output()), "Error distribution")
 }
 
-func (s *testingSuite) TestZeroDowntimeRolloutAgentgateway() {
+type testingSuiteAgentgateway struct {
+	*base.BaseTestingSuite
+}
+
+func NewTestingSuiteAgentgateway(ctx context.Context, testInst *e2e.TestInstallation) suite.TestingSuite {
+	return &testingSuiteAgentgateway{
+		base.NewBaseTestingSuite(
+			ctx,
+			testInst,
+			base.TestCase{
+				Manifests: []string{serviceManifest},
+			},
+			map[string]*base.TestCase{
+				"TestZeroDowntimeRolloutAgentgateway": {
+					Manifests: []string{agentgatewayManifest, defaults.CurlPodManifest},
+				},
+			},
+		),
+	}
+}
+
+func (s *testingSuiteAgentgateway) TestZeroDowntimeRolloutAgentgateway() {
 	// Ensure the agentgateway pod is up and running.
 	s.TestInstallation.Assertions.EventuallyPodsRunning(s.Ctx,
 		agentgatewayObjectMeta.GetNamespace(), metav1.ListOptions{
