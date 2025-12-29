@@ -2,6 +2,7 @@ package version
 
 import (
 	"encoding/json"
+	"fmt"
 	"runtime"
 	"runtime/debug"
 )
@@ -27,7 +28,10 @@ type version struct {
 }
 
 func String() string {
-	data, _ := json.Marshal(ref)
+	data, err := json.Marshal(ref)
+	if err != nil {
+		return fmt.Sprintf("unable to generate version string: %v", err)
+	}
 	return string(data)
 }
 
