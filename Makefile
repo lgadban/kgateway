@@ -427,13 +427,14 @@ generate-licenses: $(STAMP_DIR)/generate-licenses  ## Generate the licenses for 
 K8S_GATEWAY_SOURCES=$(call get_sources,cmd/kgateway pkg/ api/)
 CONTROLLER_OUTPUT_DIR=$(OUTPUT_DIR)/pkg/kgateway
 export CONTROLLER_IMAGE_REPO ?= kgateway
-export AGENTGATEWAY_IMAGE_REPO ?= agentgateway
+export AGENTGATEWAY_IMAGE_REPO ?= agentgateway-controller
 
 # We include the files in K8S_GATEWAY_SOURCES as dependencies to the kgateway build
 # so changes in those directories cause the make target to rebuild
 $(CONTROLLER_OUTPUT_DIR)/kgateway-linux-$(GOARCH): $(K8S_GATEWAY_SOURCES)
 	$(GO_BUILD_FLAGS) GOOS=linux go build -ldflags='$(LDFLAGS)' -gcflags='$(GCFLAGS)' -o $@ ./cmd/kgateway/...
 
+# TODO: is this target obsolete?
 .PHONY: kgateway
 kgateway: $(CONTROLLER_OUTPUT_DIR)/kgateway-linux-$(GOARCH)
 
@@ -459,8 +460,8 @@ $(CONTROLLER_OUTPUT_DIR)/.docker-stamp-agentgateway-$(VERSION)-$(GOARCH): $(CONT
 .PHONY: kgateway-docker
 kgateway-docker: $(CONTROLLER_OUTPUT_DIR)/.docker-stamp-$(VERSION)-$(GOARCH)
 
-.PHONY: agentgateway-docker
-agentgateway-docker: $(CONTROLLER_OUTPUT_DIR)/.docker-stamp-agentgateway-$(VERSION)-$(GOARCH)
+.PHONY: agentgateway-controller-docker
+agentgateway-controller-docker: $(CONTROLLER_OUTPUT_DIR)/.docker-stamp-agentgateway-$(VERSION)-$(GOARCH)
 
 #----------------------------------------------------------------------------------
 # SDS Server - gRPC server for serving Secret Discovery Service config
@@ -655,6 +656,7 @@ deploy-agentgateway-chart: ## Deploy the agentgateway chart
 	--namespace $(INSTALL_NAMESPACE) --create-namespace \
 	--set image.registry=$(IMAGE_REGISTRY) \
 	--set image.tag=$(VERSION) \
+	--set controller.image.repository=$(AGENTGATEWAY_IMAGE_REPO) \
 	-f $(HELM_ADDITIONAL_VALUES)
 
 .PHONY: lint-kgateway-charts
@@ -781,14 +783,14 @@ kind-reload-%: kind-build-and-load-% kind-set-image-% ; ## Use to build specifie
 
 .PHONY: kind-build-and-load ## Use to build all images and load them into kind
 kind-build-and-load: kind-build-and-load-kgateway
-kind-build-and-load: kind-build-and-load-agentgateway
+kind-build-and-load: kind-build-and-load-agentgateway-controller
 kind-build-and-load: kind-build-and-load-envoy-wrapper
 kind-build-and-load: kind-build-and-load-sds
 kind-build-and-load: kind-build-and-load-dummy-idp
 
 .PHONY: kind-load ## Use to load all images into kind
 kind-load: kind-load-kgateway
-kind-load: kind-load-agentgateway
+kind-load: kind-load-agentgateway-controller
 kind-load: kind-load-envoy-wrapper
 kind-load: kind-load-sds
 kind-load: kind-load-dummy-idp
